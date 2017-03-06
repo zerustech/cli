@@ -17,7 +17,7 @@ varnish_home=""
 
 function usage()
 {
-    printf "varnish.hist: usage: varnish.hist -b varnish_home [arguments]\n"
+    printf "varnish.hist: usage: varnish.hist -h varnish_home [arguments]\n"
     exit 0
 }
 
@@ -27,11 +27,11 @@ if [ $# == 0 ]; then
 
 fi
 
-while getopts "b:" opt; do
+while getopts "h:" opt; do
 
     case $opt in
 
-        b) varnish_home="$OPTARG";;
+        h) varnish_home="$OPTARG";;
 
         *) usage
            ;;

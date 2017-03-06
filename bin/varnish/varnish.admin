@@ -13,14 +13,13 @@ base=`cd $(dirname $BASH_SOURCE) && pwd`
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-varnish_host="localhost"
-varnish_port=6082
-key_file=""
 varnish_home=""
+key_file=""
+varnish_socket=""
 
 function usage()
 {
-    printf "varnish.admin: usage: varnish.admin -b varnish_home -S varnish_key_file [-H varnish_host] [-O varnish_port]\n"
+    printf "varnish.admin: usage: varnish.admin -h varnish_home -S varnish_key_file -T varnish_host:varnish_port\n"
     exit 0
 }
 
@@ -30,17 +29,15 @@ if [ $# == 0 ]; then
 
 fi
 
-while getopts "b:S:H:O:" opt; do
+while getopts "h:S:T:" opt; do
 
     case $opt in
 
-        b) varnish_home="$OPTARG";;
+        h) varnish_home="$OPTARG";;
 
         S) key_file="$OPTARG";;
 
-        H) varnish_host="$OPTARG";;
-
-        O) varnish_port="$OPTARG";;
+        T) varnish_socket="$OPTARG";;
 
         *) usage
            ;;
@@ -51,12 +48,12 @@ done
 
 shift $((OPTIND - 1))
 
-if [ "$varnish_home" == "" ] || [ "$key_file" == "" ]; then
+if [ "$varnish_home" == "" ] || [ "$key_file" == "" ] || [ "$varnish_socket" == "" ]; then
 
     usage
 
 fi
 
-$varnish_home/bin/varnishadm -S $key_file -T $varnish_host:$varnish_port
+$varnish_home/bin/varnishadm -S $key_file -T $varnish_socket
 
 printf "\n\n"

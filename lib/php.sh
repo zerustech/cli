@@ -17,26 +17,24 @@ source $php_base/tty.sh
 
 # This function starts a php bulitin web server.
 #
-# Usage: http_start <php_home> <host> <port> <doc_root> <log_file> <pid_file>
+# Usage: http_start php_home host:port doc_root log_file pid_file
 #
 # @param php_home The home directory of php.
-# @param host The host name or ip address the web server will be listening at.
-# @param port The port number the web server will be listening at.
+# @param socket The socket address <host>:<port> that the web server will be listening at.
 # @param doc_root The document root of the web server.
 # @param log_file The log file.
 # @param pid_file The file that stores the web server's PID.
 function php_start {
 
     local php_home=$1
-    local host=$2
-    local port=$3
-    local doc_root=$4
-    local log_file=$5
-    local pid_file=$6
+    local socket=$2
+    local doc_root=$3
+    local log_file=$4
+    local pid_file=$5
 
     tty_printf "Starting php builtin server ... "
 
-    $php_home/bin/php -S $host:$port -t $doc_root >> $log_file 2>&1 &
+    $php_home/bin/php -S $socket -t $doc_root >> $log_file 2>&1 &
 
     echo $! > $pid_file
 
@@ -45,7 +43,7 @@ function php_start {
 
 # This function stops a php bulitin web server.
 #
-# Usage: http_stop <pid_file> <log_file>
+# Usage: http_stop pid_file log_file
 # 
 # @param pid_file The file that stores the PID of the running web server.
 # @param log_file The log file.

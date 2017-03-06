@@ -41,7 +41,7 @@ tty_ansi_color_bg=(
 # This function finds a color code from foreground or background color table by
 # the given color name.
 #
-# Usage: tty_get_ansi_color_by_name <color_type> <color_name>
+# Usage: tty_get_ansi_color_by_name color_type color_name
 # 
 # @param color_type A flag indicates where to find the color code: 'fg' stands for
 # the foreground color table, 'bg' for the background one.
@@ -128,8 +128,7 @@ function tty_printf() {
 # This function "draws" a line in the terminal window by repeating a character
 # for the given number of times.
 #
-# Usage: tty_print_line [-f fg_color] [-b bg_color] [-c char]
-#        [ -l length]
+# Usage: tty_print_line [-f fg_color] [-b bg_color] [-c char] [ -l length]
 # 
 # @param fg_color The foreground color of the characters.
 # @param bg_color The background color.

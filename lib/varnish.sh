@@ -16,14 +16,11 @@ source $varnish_base/tty.sh
 
 # This function starts a varnish cache server.
 #
-# Usage: varnish_start <varnish_home> <http_host> <http_port> <varnish_host>
-# <varnish_port> <key_file> <config_file> <pid_file> [arguments ...]
+# Usage: varnish_start varnish_home http_hos>:http_port varnish_host:varnish_port key_file config_file pid_file [arguments ...]
 #
 # @param varnish_home The home directory of varnish.
-# @param http_host The host name or ip address of varnish frontend.
-# @param http_port The port number of varnish frontend.
-# @param varnish_host The host name or ip address of varnish backend.
-# @param varnish_port The port number of varnish backend.
+# @param http_socket The <host>:<port> of varnish frontend.
+# @param varnish_socket The <host>:<port> of varnish backend.
 # @param key_file The varnish security file.
 # @param config_file The varnish configuration file.
 # @param pid_file The file that will store the varnish server's PID.
@@ -31,22 +28,20 @@ source $varnish_base/tty.sh
 function varnish_start
 {
     local varnish_home=$1
-    local http_host=$2
-    local http_port=$3
-    local varnish_host=$4
-    local varnish_port=$5
-    local key_file=$6
-    local config_file=$7
-    local pid_file=$8
+    local http_socket=$2
+    local varnish_socket=$3
+    local key_file=$4
+    local config_file=$5
+    local pid_file=$6
 
-    shift 8
+    shift 6
 
     tty_printf "Starting varnish server ... "
 
     sudo $varnish_home/sbin/varnishd \
         -j unix,user=nobody \
-        -a $http_host:$http_port \
-        -T $varnish_host:$varnish_port \
+        -a $http_socket \
+        -T $varnish_socket \
         -s malloc,256M \
         -S $key_file \
         -f $config_file \
@@ -57,7 +52,7 @@ function varnish_start
 
 # This function stops a varnish cache server.
 #
-# Usage: varnish_stop <pid_file>
+# Usage: varnish_stop pid_file
 #
 # @param pid_file The file that will store the varnish server's PID.
 function varnish_stop

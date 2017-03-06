@@ -9,6 +9,8 @@
 
 base=`cd $(dirname $BASH_SOURCE) && pwd`
 
+source $base/../../lib/http.sh
+
 # This script sends an http POST request to the remote server from the command
 # line.
 # 

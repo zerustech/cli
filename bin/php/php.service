@@ -13,8 +13,7 @@ base=`cd $(dirname $BASH_SOURCE) && pwd` && source $base/../../lib/php.sh
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-host="0.0.0.0"
-port=8000
+socket=""
 doc_root=""
 pid_file=""
 log_file=""
@@ -24,7 +23,8 @@ var=$base/../../var
 
 function usage()
 {
-    printf "php.service: usage: php.service -b php_home -d doc_root [-h host] [-o port] [-P pid_file] <start|stop> [arguments ...]\n"
+    printf "php.service: usage: php.service -h php_home -t doc_root -S host:port start [arguments ...]\n"
+    printf "php.service: usage: php.service -S host:port stop\n"
     exit 0
 }
 
@@ -34,19 +34,15 @@ if [ $# == 0 ]; then
 
 fi
 
-while getopts "b:h:o:d:P:" opt; do
+while getopts "h:t:S:" opt; do
 
     case $opt in
 
-        b) php_home="$OPTARG";;
+        h) php_home="$OPTARG";;
 
-        d) doc_root="$OPTARG";;
+        t) doc_root="$OPTARG";;
 
-        h) host="$OPTARG";;
-
-        o) port="$OPTARG";;
-
-        P) pid_file="$OPTARG";;
+        S) socket="$OPTARG";;
 
         *) usage;;
 
@@ -56,31 +52,39 @@ done
 
 shift $((OPTIND - 1))
 
-if [ "$php_home" == "" ] || [ "$doc_root" == "" ]; then
+pid_file="$var/php-$socket.pid"
 
-    usage;
-
-fi
-
-if [ "$pid_file" == "" ]; then
-
-    pid_file="$var/php-$host-$port.pid"
-
-fi
-
-if [ "$log_file" == "" ]; then
-
-    log_file="$var/php-$host-$port.log"
-
-fi
+log_file="$var/php-$socket.log"
 
 command=$1
 
 shift
 
+if [ "$command" == "start" ]; then
+
+    if [ "$php_home" == "" ] || [ "$doc_root" == "" ] || [ "$socket" == "" ]; then
+
+        usage;
+
+    fi
+
+fi
+
+
+if [ "$command" == "stop" ]; then
+
+    if [ "$socket" == "" ]; then
+
+        usage;
+
+    fi
+
+fi
+
+
 case $command in
 
-    start) php_start "$php_home" "$host" "$port" "$doc_root" "$log_file" "$pid_file";;
+    start) php_start "$php_home" "$socket" "$doc_root" "$log_file" "$pid_file";;
 
      stop) php_stop "$pid_file" "$log_file";;
 

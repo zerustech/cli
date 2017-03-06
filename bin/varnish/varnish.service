@@ -13,10 +13,8 @@ base=`cd $(dirname $BASH_SOURCE) && pwd` && source $base/../../lib/varnish.sh
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-http_host="0.0.0.0"
-http_port=80
-varnish_host="localhost"
-varnish_port=6082
+http_socket=""
+varnish_socket=""
 key_file=""
 config_file=
 pid_file=""
@@ -25,7 +23,8 @@ var=$base/../../var
 
 function usage()
 {
-    printf "varnish.service: usage: varnish.service -b varnish_home -f config_file -S varnish_key_file [-h http_host] [-o http_port] [-H varnish_host] [-O varnish_port] [-P pid_file] <start|stop> [arguments ...]\n"
+    printf "varnish.service: usage: varnish.service -h varnish_home -f config_file -S varnish_key_file -a http_host:http_socket -T varnish_host:varnish_port start [arguments ...]\n"
+    printf "varnish.service: usage: varnish.service -b varnish_host:varnish_port stop\n"
     exit 0
 }
 
@@ -35,28 +34,21 @@ if [ $# == 0 ]; then
 
 fi
 
-while getopts "b:f:S:h:o:H:O:P:" opt; do
+while getopts "h:f:S:a:T:" opt; do
 
     case $opt in
 
-        b) varnish_home="$OPTARG";;
+        h) varnish_home="$OPTARG";;
 
         f) config_file="$OPTARG";;
 
         S) key_file="$OPTARG";;
 
-        h) http_host="$OPTARG";;
+        a) http_socket="$OPTARG";;
 
-        o) http_port="$OPTARG";;
+        T) varnish_socket="$OPTARG";;
 
-        H) varnish_host="$OPTARG";;
-
-        O) varnish_port="$OPTARG";;
-
-        P) pid_file="$OPTARG";;
-
-        *) usage
-           ;;
+        *) usage;;
 
     esac
 
@@ -64,25 +56,35 @@ done
 
 shift $((OPTIND - 1))
 
-if [ "$varnish_home" == "" ] || [ "$config_file" == "" ] || [ "$key_file" == "" ]; then
-
-    usage
-
-fi
-
-if [ "$pid_file" == "" ]; then
-
-    pid_file="$var/varnish-$varnish_host-$varnish_port.pid"
-
-fi
+pid_file="$var/varnish-$varnish_socket.pid"
 
 command=$1
 
 shift
 
+if [ "$command" == "start" ]; then
+
+    if [ "$varnish_home" == "" ] || [ "$config_file" == "" ] || [ "$key_file" == "" ] || [ "$http_socket" == "" ] || [ "$varnish_socket" == "" ]; then
+
+        usage
+
+    fi
+
+fi
+
+if [ "$command" == "stop" ]; then
+
+    if [ "$varnish_socket" == "" ]; then
+
+        usage
+
+    fi
+
+fi
+
 case $command in
 
-    start) varnish_start "$varnish_home" "$http_host" "$http_port" "$varnish_host" "$varnish_port" "$key_file" "$config_file" "$pid_file" "$@";;
+    start) varnish_start "$varnish_home" "$http_socket" "$varnish_socket" "$key_file" "$config_file" "$pid_file" "$@";;
 
      stop) varnish_stop "$pid_file";;
 

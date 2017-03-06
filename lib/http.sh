@@ -18,7 +18,7 @@ source $http_base/tty.sh
 
 # This function packs one line of http data to the buffer.
 # 
-# Usage: http_pack <buffer> <line>
+# Usage: http_pack buffer line
 # 
 # @param buffer The data buffer.
 # @param line The line of data to be packed.
@@ -44,7 +44,7 @@ function http_pack(){
 
 # This function sends an http request to the remote server.
 #
-# Usage: http_send <host> <port> <data>
+# Usage: http_send host port data
 # 
 # @param host The host name or ip address of the remote server.
 # @param port The port number of the remote server.
@@ -70,7 +70,7 @@ EOF
 
 # This function sends an http request to the remote server.
 #
-# Usage: http_send <host> <port> <data>
+# Usage: http_send host port data
 # 
 # @param host The host name or ip address of the remote server.
 # @param port The port number of the remote server.
@@ -103,7 +103,7 @@ function http_load_session_cookie() {
 # This function parses and return the value of session cookie from a 'Set-Cookie' response
 # header field.
 #
-# Usage: http_parse_session_cookie <body> <cookie_name>
+# Usage: http_parse_session_cookie body cookie_name
 # 
 # @param body The payload body of the response.
 # @param cookie_name Name of the session cookie (e.g, PHPSESSID). 
@@ -123,7 +123,7 @@ function http_parse_session_cookie() {
 # This function parses the value of of session cookie from response and stores
 # the value to a specified file.
 #
-# Usage: http_store_session_cookie <file> <name> <body>
+# Usage: http_store_session_cookie file name body
 # 
 # @param file Path to the file for storing the value of the session cookie.
 # @param name Name of the session cookie (e.g, PHPSESSID). 
@@ -148,7 +148,7 @@ function http_store_session_cookie() {
 #
 # Example: Thu, 01 Dec 1994 16:00:00 GMT
 #
-# Usage: http_gmt_date <offset>
+# Usage: http_gmt_date offset
 # 
 # @param offset The number of seconds (positive or minus) to be adjusted on
 # current date.
@@ -163,7 +163,13 @@ function http_gmt_date() {
 
     fi
 
-    local date=`$php_home/bin/php $http_base/../bin/php/gmtdate.php $offset`
+    local time_zone=$TZ
+
+    TZ=GMT
+
+    local date=`date -v ${offset}S +"%a, %d %b %Y %H:%M:%S %Z"`
+
+    TZ=$time_zone
 
     printf "$date"
 }
