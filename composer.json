@@ -1,0 +1,21 @@
+{
+    "name": "zerustech/cli",
+    "description": "Commonly used functions and scripts for cli programming.",
+    "type": "library",
+    "keywords": ["cli", "bash", "php"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Lee",
+            "email": "michael.lee@zerustech.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

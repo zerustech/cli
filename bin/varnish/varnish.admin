@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# This file is part of the ZerusTech HTTP Cache Tutorial package.
+# 
+# (c) Michael Lee <michael.lee@zerustech.com>
+#
+# For the full copyright and license information, please view the LICENSE file 
+# that was distributed with this source code.
+
+base=`cd $(dirname $BASH_SOURCE) && pwd`
+
+# This is a command line wrapper of varnishadmin.
+# 
+# @author Michael Lee <michael.lee@zerustech.com>
+
+varnish_host="localhost"
+varnish_port=6082
+key_file=""
+varnish_home=""
+
+function usage()
+{
+    printf "varnish.admin: usage: varnish.admin -b varnish_home -S varnish_key_file [-H varnish_host] [-O varnish_port]\n"
+    exit 0
+}
+
+if [ $# == 0 ]; then
+    
+    usage
+
+fi
+
+while getopts "b:S:H:O:" opt; do
+
+    case $opt in
+
+        b) varnish_home="$OPTARG";;
+
+        S) key_file="$OPTARG";;
+
+        H) varnish_host="$OPTARG";;
+
+        O) varnish_port="$OPTARG";;
+
+        *) usage
+           ;;
+
+    esac
+
+done
+
+shift $((OPTIND - 1))
+
+if [ "$varnish_home" == "" ] || [ "$key_file" == "" ]; then
+
+    usage
+
+fi
+
+$varnish_home/bin/varnishadm -S $key_file -T $varnish_host:$varnish_port
+
+printf "\n\n"
