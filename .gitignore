@@ -6,3 +6,4 @@ vendor
 .DS_Store
 var/*.pid
 var/*.log
+composer.lock
