@@ -1,0 +1,153 @@
+#!/bin/bash
+
+# This file is part of the ZerusTech HTTP Cache Tutorial package.
+#
+# (c) Michael Lee <michael.lee@zerustech.com>
+#
+# For the full copyright and license information, please view the LICENSE file 
+# that was distributed with this source code.
+
+base=`cd $(dirname $BASH_SOURCE) && pwd`
+
+source "$base/../../lib/tty.sh"
+
+# This script runs a task from command line and generates nice output.
+# 
+# @author Michael Lee <michael.lee@zerustech.com>
+
+# The command line usage of this script.
+# 
+# Usage: usage
+function usage()
+{
+    printf "task.run: usage: task.run [-av] [-e exec] [-l log_file] [-t tty] task\n"
+    printf "The options are as follows:\n"
+    printf "\t-a Run task automatically.\n"
+    printf "\t-v Run task in verbose mode: display output from task to stdout.\n"
+
+    exit 0
+}
+
+log_file="$base/../../var/task.run.log"
+verbose=0
+interactive=1
+exec=""
+task=""
+tty=`tty`
+
+if [ "$#" == "0" ]; then
+
+    usage
+
+fi
+
+while getopts "ave:l:t:" opt; do
+
+    case $opt in
+
+        a) interactive=0;;
+
+        v) verbose=1;;
+
+        e) exec="$OPTARG";;
+
+        l) log_file="$OPTARG";;
+
+        t) tty="$OPTARG";;
+
+        *) usage;;
+
+    esac
+
+done
+
+shift $((OPTIND -1))
+
+task=$1
+
+if [ "$task" == "" ]; then
+
+   usage
+
+fi
+
+full_path=`cd -P $(dirname "$task") && pwd`/`basename "$task"`
+
+run=0
+
+if [ "$interactive" == "1" ]; then
+
+    tty_printf -f yellow "%s " $full_path
+
+    printf "Do you want to run it ? (y/n)"
+
+    if [ "$tty" != "not a tty" ]; then
+
+        old=`stty -g < $tty`
+
+        # disable echo and icanon for current tty.
+        stty -echo -icanon min 1 time 0 < $tty
+
+    fi
+
+    # read only 1 character, so no need to press enter.
+    read -n 1 answer < "$tty"
+
+    if [ "$tty" != "not a tty" ]; then
+
+        # restore the original tty configuration.
+        stty "$old" < "$tty"
+
+    fi
+
+    if [ "$answer" == "y" ]; then
+
+        if [ "$verbose" == "1" ]; then
+
+            tty_printf "\n\n"
+
+        fi
+
+        run=1
+
+    else 
+
+        tty_printf " ... "
+
+        tty_printf -f green "[skip]\n"
+
+    fi
+
+else
+
+    if [ "$verbose" == "1" ]; then
+
+        tty_printf -f yellow "Running %s ... \n" $full_path
+
+    else
+
+        tty_printf -f yellow "%s " $full_path
+
+    fi
+
+    run=1
+
+fi
+
+if [ "$run" == "1" ]; then
+
+    if [ "$verbose" == "1" ]; then
+
+        $exec "$task" "$@" | tee $log_file
+
+    else
+
+        tty_printf " ... " $task
+
+        $exec "$task" "$@" >> $log_file 2>&1
+
+        tty_printf -f green "[done]\n"
+
+    fi
+
+fi
