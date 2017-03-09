@@ -20,10 +20,11 @@ source "$base/../../lib/tty.sh"
 # Usage: usage
 function usage()
 {
-    printf "task-run: usage: task-run [-av] [-e exec] [-l log_file] [-t tty] task\n"
+    printf "task-run: usage: task-run [-avs] [-e task_exec] [-l log_file] [-t tty] task\n"
     printf "The options are as follows:\n"
     printf "\t-a Run task automatically.\n"
     printf "\t-v Run task in verbose mode: display output from task to stdout.\n"
+    printf "\t-s Run task in scilent mode: hide output from task.\n"
 
     exit 0
 }
@@ -34,11 +35,11 @@ OPTIND=1
 : ${log_file:="$base/../../var/task-run.log"}
 : ${verbose:="0"}
 : ${interactive:="1"}
-: ${exec:=""}
+: ${task_exec:=""}
 : ${task:=""}
 : ${tty:="`tty`"}
 
-while getopts "ave:l:t:" opt; do
+while getopts "avse:l:t:" opt; do
 
     case $opt in
 
@@ -46,7 +47,9 @@ while getopts "ave:l:t:" opt; do
 
         v) verbose=1;;
 
-        e) exec="$OPTARG";;
+        s) verbose=0;;
+
+        e) task_exec="$OPTARG";;
 
         l) log_file="$OPTARG";;
 
@@ -135,13 +138,13 @@ if [ "$run" == "1" ]; then
 
     if [ "$verbose" == "1" ]; then
 
-        $exec "$task" "$@" | tee $log_file
+        $task_exec "$task" "$@" | tee $log_file
 
     else
 
         tty_printf " ... " $task
 
-        $exec "$task" "$@" >> $log_file 2>&1
+        $task_exec "$task" "$@" >> $log_file 2>&1
 
         tty_printf -f green "[done]\n"
 
