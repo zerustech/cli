@@ -13,26 +13,20 @@ base=`cd $(dirname $BASH_SOURCE) && pwd` && source $base/../../lib/php.sh
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-socket=""
-doc_root=""
-pid_file=""
-log_file=""
-command=""
-php_home=""
-var=$base/../../var
+: ${socket:=""}
+: ${doc_root:=""}
+: ${pid_file:=""}
+: ${log_file:=""}
+: ${command:=""}
+: ${php_home:=""}
+: ${var:="$base/../../var"}
 
 function usage()
 {
-    printf "php.service: usage: php.service -h php_home -t doc_root -S host:port start [arguments ...]\n"
-    printf "php.service: usage: php.service -S host:port stop\n"
+    printf "php-service: usage: php-service -h php_home -t doc_root -S host:port start [arguments ...]\n"
+    printf "php-service: usage: php-service -S host:port stop\n"
     exit 0
 }
-
-if [ $# == 0 ]; then
-    
-    usage
-
-fi
 
 while getopts "h:t:S:" opt; do
 

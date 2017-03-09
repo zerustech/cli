@@ -11,29 +11,24 @@ base=`cd $(dirname $BASH_SOURCE) && pwd`
 
 source $base/../../lib/http.sh
 
-# This script sends an http GET request to the remote server from the command
+# This script sends an http BAN request to the remote server from the command
 # line.
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-host=localhost
-port=80
-url=/
+: ${host:=localhost}
+: ${port:=80}
+: ${url:=^/}
+: ${tags:=''}
 
 # The command line usage of this script.
 function usage()
 {
-    printf "http.get: usage: http.get [-h host] [-p port] [-l url] [arguments ...]\n"
+    printf "http-ban: usage: http-ban [-h host] [-p port] [-l regex] [-t tags] [arguments ...]\n"
     exit 0
 }
 
-if [ $# == 0 ]; then
-
-    usage
-
-fi
-
-while getopts "h:p:l:" opt; do
+while getopts "h:p:l:t:" opt; do
 
     case $opt in 
 
@@ -43,17 +38,25 @@ while getopts "h:p:l:" opt; do
 
         l) url="$OPTARG";;
 
-        *) usage;;
+        t) tags="$OPTARG";;
+
+        *) usage ;;
 
     esac
 
 done
 
-shift $((OPTIND -1))
+shift $((OPTIND - 1))
 
 http_data=""
-http_data=`http_pack "$http_data" "GET $url HTTP/1.1"`
+http_data=`http_pack "$http_data" "BAN $url HTTP/1.1"`
 http_data=`http_pack "$http_data" "Host: $host:$port"`
+
+if [ "$tags" != "" ]; then
+
+    http_data=`http_pack "$http_data" "X-Cache-Tags: $tags"`
+
+fi
 
 
 for data in "$@"

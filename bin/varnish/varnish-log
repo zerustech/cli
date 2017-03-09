@@ -13,19 +13,13 @@ base=`cd $(dirname $BASH_SOURCE) && pwd`
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-varnish_home=""
+: ${varnish_home:=""}
 
 function usage()
 {
-    printf "varnish.log: usage: varnish.log -h varnish_home [arguments]\n"
+    printf "varnish-log: usage: varnish-log -h varnish_home [arguments]\n"
     exit 0
 }
-
-if [ $# == 0 ]; then
-    
-    usage
-
-fi
 
 while getopts "h:" opt; do
 

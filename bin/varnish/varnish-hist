@@ -9,23 +9,17 @@
 
 base=`cd $(dirname $BASH_SOURCE) && pwd`
 
-# This is a command line wrapper of varnishtop.
+# This is a command line wrapper of varnishhist.
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-varnish_home=""
+: ${varnish_home:=""}
 
 function usage()
 {
-    printf "varnish.top: usage: varnish.top -h varnish_home [arguments]\n"
+    printf "varnish-hist: usage: varnish-hist -h varnish_home [arguments]\n"
     exit 0
 }
-
-if [ $# == 0 ]; then
-    
-    usage
-
-fi
 
 while getopts "h:" opt; do
 
@@ -48,6 +42,6 @@ if [ "$varnish_home" == "" ]; then
 
 fi
 
-sudo $varnish_home/bin/varnishtop "$@"
+sudo $varnish_home/bin/varnishhist "$@"
 
 printf "\n\n"

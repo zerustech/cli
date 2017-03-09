@@ -9,29 +9,29 @@
 
 base=`cd $(dirname $BASH_SOURCE) && pwd`
 
-# This is a command line wrapper of varnishstat.
+# This is a command line wrapper of varnishadmin.
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-varnish_home=""
+: ${varnish_home:=""}
+: ${key_file:=""}
+: ${varnish_socket:=""}
 
 function usage()
 {
-    printf "varnish.stat: usage: varnish.stat -h varnish_home [arguments]\n"
+    printf "varnish-admin: usage: varnish-admin -h varnish_home -S varnish_key_file -T varnish_host:varnish_port\n"
     exit 0
 }
 
-if [ $# == 0 ]; then
-    
-    usage
-
-fi
-
-while getopts "h:" opt; do
+while getopts "h:S:T:" opt; do
 
     case $opt in
 
         h) varnish_home="$OPTARG";;
+
+        S) key_file="$OPTARG";;
+
+        T) varnish_socket="$OPTARG";;
 
         *) usage
            ;;
@@ -42,12 +42,12 @@ done
 
 shift $((OPTIND - 1))
 
-if [ "$varnish_home" == "" ]; then
+if [ "$varnish_home" == "" ] || [ "$key_file" == "" ] || [ "$varnish_socket" == "" ]; then
 
     usage
 
 fi
 
-sudo $varnish_home/bin/varnishstat "$@"
+$varnish_home/bin/varnishadm -S $key_file -T $varnish_socket
 
 printf "\n\n"

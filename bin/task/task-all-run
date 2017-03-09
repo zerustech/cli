@@ -4,7 +4,7 @@
 #
 # (c) Michael Lee <michael.lee@zerustech.com>
 #
-# For the full copyright and license information, please view the LICENSE file 
+# For the full copyright and license information, please view the LICENSE file
 # that was distributed with this source code.
 
 base=`cd $(dirname $BASH_SOURCE) && pwd`
@@ -12,15 +12,15 @@ base=`cd $(dirname $BASH_SOURCE) && pwd`
 source "$base/../../lib/tty.sh"
 
 # This script finds tasks by name and runs the tasks matched from command line.
-# 
+#
 # @author Michael Lee <michael.lee@zerustech.com>
 
 # The command line usage of this script.
-# 
+#
 # Usage: usage
 function usage()
 {
-    printf "task.all.run: usage: task.all.run [-av] [-l log_file] [-e task_exec] [-p path_pattern] [-n name_pattern] [-d depth|min+|min-max] path [task_arguments ...]\n"
+    printf "task-all-run: usage: task-all-run [-av] [-l log_file] [-e task_exec] [-p path_pattern] [-n name_pattern] [-d depth|min+|min-max] path [task_arguments ...]\n"
     printf "The options are as follows:\n"
     printf "\t-a Run all tasks automatically.\n"
     printf "\t-v Run all tasks in verbose mode: display output from tasks to stdout.\n"
@@ -29,7 +29,7 @@ function usage()
 }
 
 # This function checks if the given path is a valid directory.
-# 
+#
 # Usage: test_directory <path>
 #
 # @param path The path to be tested.
@@ -45,24 +45,20 @@ function test_directory()
     fi
 }
 
-task_exec=""
-log_file="$base/../../var/task.all.run.log"
-path_pattern=""
-name_pattern=""
-depth=""
-min_depth=""
-max_depth=""
-path=""
-verbose=0
-interactive=1
-task_arguments=""
-tty=`tty`
+: ${exec:=""}
+: ${log_file:="$base/../../var/task-all-run.log"}
+: ${path_pattern:=""}
+: ${name_pattern:=""}
+: ${depth:=""}
+: ${min_depth:=""}
+: ${max_depth:=""}
+: ${path:=""}
+: ${verbose:="0"}
+: ${interactive:="1"}
+: ${tty:="`tty`"}
 
-if [ "$#" == "0" ]; then
-
-    usage
-
-fi
+# reset OPTIND to 1, in case this script was sourced with no arguments.
+OPTIND=1
 
 while getopts "avl:e:p:n:d:" opt; do
 
@@ -92,8 +88,6 @@ shift $((OPTIND -1))
 
 path=$1 && shift
 
-task_arguments=$@
-
 if [ "$path" == "" ]; then
 
    usage
@@ -101,35 +95,6 @@ if [ "$path" == "" ]; then
 fi
 
 test_directory `dirname $log_file` && test_directory $path  || exit $?
-
-task_options=""
-
-if [ "$verbose" == "1" ]; then
-
-   task_options="${task_options}-v "
-
-fi
-
-if [ "$interactive" == "0" ]; then
-
-   task_options="${task_options}-a "
-
-fi
-
-if [ "$task_exec" != "" ]; then
-
-   task_options="${task_options}-e \"$task_exec\" "
-
-fi
-
-if [ "$log_file" != "" ]; then
-
-   task_options="${task_options} -l \"$log_file\" "
-
-fi
-
-task_options="${task_options} -t \"$tty\""
-
 
 find_options=""
 
@@ -182,9 +147,8 @@ fi
 find_options="${find_options} -print0"
 
 # Either 'bash -c' or 'eval' can be used to dynamically construct command
-# 
 bash -c "find \"$path\" $find_options" | while IFS= read -r -d "" file ; do
 
-    bash -c "$base/task.run  $task_options \"$file\" $@"
+    source "$base/task-run" "$file" "$@"
 
 done

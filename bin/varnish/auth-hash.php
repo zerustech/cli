@@ -17,7 +17,7 @@
  * The auth key consists of the sha256 of the random challenge token and the 
  * secrete.
  *
- * Usage: php hash.php <challenge> <secret>
+ * Usage: php auth-hash.php <challenge> <secret>
  */
 $challenge = $argv[1];
 

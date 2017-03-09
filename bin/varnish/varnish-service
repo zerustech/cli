@@ -13,26 +13,20 @@ base=`cd $(dirname $BASH_SOURCE) && pwd` && source $base/../../lib/varnish.sh
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-http_socket=""
-varnish_socket=""
-key_file=""
-config_file=
-pid_file=""
-varnish_home=""
-var=$base/../../var
+: ${http_socket:=""}
+: ${varnish_socket:=""}
+: ${key_file:=""}
+: ${config_file:=""}
+: ${pid_file:=""}
+: ${varnish_home:=""}
+: ${var:="$base/../../var"}
 
 function usage()
 {
-    printf "varnish.service: usage: varnish.service -h varnish_home -f config_file -S varnish_key_file -a http_host:http_socket -T varnish_host:varnish_port start [arguments ...]\n"
-    printf "varnish.service: usage: varnish.service -b varnish_host:varnish_port stop\n"
+    printf "varnish-service: usage: varnish-service -h varnish_home -f config_file -S varnish_key_file -a http_host:http_socket -T varnish_host:varnish_port start [arguments ...]\n"
+    printf "varnish-service: usage: varnish-service -b varnish_host:varnish_port stop\n"
     exit 0
 }
-
-if [ $# == 0 ]; then
-    
-    usage
-
-fi
 
 while getopts "h:f:S:a:T:" opt; do
 

@@ -16,26 +16,20 @@ source $base/../../lib/http.sh
 # 
 # @author Michael Lee <michael.lee@zerustech.com>
 
-host=localhost
-port=80
-url=/
-body=''
-length=0
-var=$base/../../var
-session_file=$var/session.txt
-session_name="PHPSESSID"
+: ${host:="localhost"}
+: ${port:="80"}
+: ${url:="/"}
+: ${body:=""}
+: ${length:="0"}
+: ${var:="$base/../../var"}
+: ${session_file:="$var/session.txt"}
+: ${session_name:="PHPSESSID"}
 
 function usage()
 {
     printf "http.post: usage: http.post [-h host] [-p port] [-l url] [-b body] [-s session_file] [-n session_name] [arguments ...]\n"
     exit 0
 }
-
-if [ $# == 0 ]; then
-
-    usage
-
-fi
 
 while getopts "h:p:l:b:s:n:" opt; do
 
